@@ -6,29 +6,37 @@ import os
 cwd = os.getcwd()
 def extracterror(cmd):
     
-    # args = cmd.split(' ')
-    for name in os.listdir(cwd):
-        print(name)
-        if name =='hello.c':
-            print("found!")
+    
+    cmptime = subprocess.call(["g++", "error.cpp"]) # OR gcc for c program
+    if(cmptime==0):
+        runtime = subprocess.call("./a.out")
+        if(runtime==0):
+            print("No errors found!")
+        else:
+            print("runtime error")
+            tmp = subprocess.Popen("./a.out",stdout=subprocess.PIPE,stderr = subprocess.PIPE)
+            out= tmp.stderr.read().decode("utf-8")
+            print("out")
+            print(out)
+    else:
+        print("compile-time error")
+        cmp= subprocess.Popen(["g++", "error.cpp"],stdout=subprocess.PIPE,stderr = subprocess.PIPE)
+        out= cmp.stderr.read().decode("utf-8")
+    
+    out.rstrip('\n')
+    stroutput = (out.splitlines())
+    errormsg = ""
+    errortype =""
+    for line in stroutput:
+        if "error:" in line:
+            errortype,errormsg = line.split('error:')
+            c=1
+            break
+    
+    print(errormsg)
+    sendreq(errormsg)
 
-    # print(cmd)
-    # s = subprocess.run("gcc hello.c -o out1;./out1") 
-    # print(", return code", s) 
-    subprocess.call(["gcc", "hello.c"]) # OR gcc for c program
-    subprocess.call("./a.exe")
-    # print("printing result")
-    # print(tmp)
-    # theproc = subprocess.Popen(["gcc", cmd],stdout=subprocess.PIPE,stderr = subprocess.PIPE)
-    # out = theproc.stderr.read().decode("utf-8") 
-    # out.rstrip('\n')
-    # print(type(out))
-    # if(out ==""):
-    #     print("No errors found!")
-    # else:
-    #     stroutput = (out.splitlines()[-1])
-    #     print(stroutput)
-        # sendreq(stroutput)
+
         
         
 def getlinks(rjson):     
